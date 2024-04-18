@@ -50,7 +50,7 @@ public class TrophyTracker : MonoBehaviour
             }
 
             _currentFilePath = Path.Combine(folderPath, $"{DateTime.Now:dd_MM_yyyy_hh_mm_ss}.csv");
-            File.WriteAllText(_currentFilePath, $"ID, NAME, RAW SIZE, FORMATTED SIZE, IS TROPHY, MIN SIZE, MAX SIZE");
+            File.WriteAllText(_currentFilePath, $"ID, NAME, RAW SIZE, FORMATTED SIZE, IS TROPHY, MIN SIZE, MAX SIZE, IS ABERRATION");
 
             WinchCore.Log.Debug($"Saving data this run to {_currentFilePath}");
         }
@@ -64,8 +64,6 @@ public class TrophyTracker : MonoBehaviour
     [HarmonyPatch(typeof(SaveData), nameof(SaveData.RecordFishSize))]
     public static void SaveData_RecordFishSize(SaveData __instance, FishItemData fishItemData, float size)
     {
-        WinchCore.Log.Debug($"GRUH");
-
         try
         {
             // Get it to always use cm for this
@@ -78,12 +76,12 @@ public class TrophyTracker : MonoBehaviour
             var isTrophy = size > GameManager.Instance.GameConfigData.TrophyMaxSize;
             var minSize = fishItemData.minSizeCentimeters;
             var maxSize = fishItemData.maxSizeCentimeters;
+            var isAberration = fishItemData.isAberration;
 
             // Revert units after
             GameManager.Instance.SettingsSaveData.units = currentUnits;
 
-            using StreamWriter write = new(_currentFilePath);
-            write.WriteLine($"\n{id}, {name}, {size}, {formattedSize}, {isTrophy}, {minSize}, {maxSize}");
+            File.AppendAllText(_currentFilePath, $"\n{id}, {name}, {size}, {formattedSize}, {isTrophy}, {minSize}, {maxSize}, {isAberration}");
         }
         catch (Exception e)
         {
