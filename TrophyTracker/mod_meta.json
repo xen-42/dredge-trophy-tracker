@@ -1,0 +1,8 @@
+{
+	"Name": "Trophy Tracker",
+	"ModGUID": "xen.TrophyTracker",
+	"Version": "0.0.1",
+	"ModAssembly": "TrophyTracker.dll",
+	"MinWinchVersion": "0.2.3",
+	"Entrypoint": "TrophyTracker.Loader/Initialize"
+}
