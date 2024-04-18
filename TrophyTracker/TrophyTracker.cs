@@ -20,7 +20,6 @@ public class TrophyTracker : MonoBehaviour
         new Harmony(nameof(TrophyTracker)).PatchAll();
 
         SceneManager.activeSceneChanged += OnSceneChanged;
-        OnSceneChanged(default, SceneManager.GetActiveScene());
 
         WinchCore.Log.Debug($"{nameof(TrophyTracker)} has loaded!");
     }
@@ -36,23 +35,28 @@ public class TrophyTracker : MonoBehaviour
 
         if (current.name == "Game")
         {
-            try
-            {
-                var folderPath = Path.Combine(GetModFolder(), "data");
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
+            OnLoadGameScene();
+        }
+    }
 
-                _currentFilePath = Path.Combine(folderPath, $"{DateTime.Now:dd_MM_yyyy_hh_mm_ss}.csv");
-                File.WriteAllText(_currentFilePath, $"ID, NAME, RAW SIZE, FORMATTED SIZE, IS TROPHY, MIN SIZE, MAX SIZE");
-                
-                WinchCore.Log.Debug($"Saving data this run to {_currentFilePath}");
-            }
-            catch (Exception ex)
+    private void OnLoadGameScene()
+    {
+        try
+        {
+            var folderPath = Path.Combine(GetModFolder(), "data");
+            if (!Directory.Exists(folderPath))
             {
-                WinchCore.Log.Error($"Failed to create new data file - no fish info will be recorded! {ex}");
+                Directory.CreateDirectory(folderPath);
             }
+
+            _currentFilePath = Path.Combine(folderPath, $"{DateTime.Now:dd_MM_yyyy_hh_mm_ss}.csv");
+            File.WriteAllText(_currentFilePath, $"ID, NAME, RAW SIZE, FORMATTED SIZE, IS TROPHY, MIN SIZE, MAX SIZE");
+
+            WinchCore.Log.Debug($"Saving data this run to {_currentFilePath}");
+        }
+        catch (Exception ex)
+        {
+            WinchCore.Log.Error($"Failed to create new data file - no fish info will be recorded! {ex}");
         }
     }
 
